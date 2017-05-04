@@ -1,0 +1,38 @@
+# encoding: utf-8
+
+##
+# Backup v4.x Configuration
+
+##
+# Config Options
+#
+# Sets the root path for all relative paths, including default paths.
+root_path '{{ root_path }}'
+#
+# Sets the path where backups are processed until they're stored.
+tmp_path  '{{ tmp_path }}'
+#
+# Sets the path where backup stores persistent information.
+data_path '{{ data_path }}'
+
+##
+# Utilities
+# If you need to use a utility other than the one Backup detects,
+# or a utility can not be found in your $PATH.
+#
+#   Utilities.configure do
+#     tar       '/usr/bin/gnutar'
+#     redis_cli '/opt/redis/redis-cli'
+#   end
+
+##
+# Logging
+  Logger.configure do
+    console.quiet     = true
+    logfile.enabled   = false
+    syslog.enabled    = true            # Same as command line: --syslog
+    syslog.ident      = 'backup'        # Default: 'backup'
+  end
+#
+# Command line options will override those set here.
+#   backup perform --trigger my_backup --no-syslog --no-quiet

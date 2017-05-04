@@ -1,0 +1,14 @@
+---
+galaxy_info:
+  author: Eugene Ignatov
+  description: Install and configure backup gem
+
+  license: MIT
+  min_ansible_version: 2.0
+
+  platforms:
+  - name: Ubuntu
+    versions:
+    - all
+
+dependencies: []

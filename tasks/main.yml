@@ -1,0 +1,87 @@
+---
+- name: "Install ruby from repo"
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - ruby2.3
+    - ruby2.3-dev
+    - gem
+    - zlib1g-dev
+    - build-essential
+    - libssl-dev
+    - libreadline-dev
+    - libyaml-dev
+    - libxml2-dev
+  become: yes
+  tags:
+    - backup
+    - application
+
+- name: "Install gem backup"
+  gem:
+    name: backup
+    state: present
+    user_install: no
+  become: yes
+  tags:
+    - backup
+    - application
+
+- name: "Create backup config directory"
+  file:
+    path:  "{{ item }}"
+    owner: "{{ backup_user }}"
+    group: "{{ backup_user }}"
+    state: directory
+  with_items:
+    - "{{ root_path }}"
+    - "{{ root_path }}/models"
+    - "{{ data_path }}"
+  tags:
+    - backup
+
+- name: "Configure backup config"
+  template:
+    src:   config.rb.j2
+    dest:  "{{ root_path }}/config.rb"
+    owner: "{{ backup_user }}"
+    group: "{{ backup_user }}"
+    mode:  0600
+  tags:
+    - backup
+
+- name: "Configure backup models"
+  template:
+    src:   model.rb.j2
+    dest:  "{{ root_path }}/models/{{ item.name }}.rb"
+    owner: "{{ backup_user }}"
+    group: "{{ backup_user }}"
+    mode:  0600
+  with_items:
+    - "{{ models }}"
+  tags:
+    - backup
+
+- name: Preconfigure cron
+  cron:
+    name: PATH
+    env: yes
+    value: "{{ ansible_env.PATH }}"
+    user: "{{ backup_user }}"
+  tags:
+    - backup
+
+- name: Configure cron
+  cron:
+    name: "Backup job: {{ item.name }}"
+    minute: "{{ item.cron.minute }}"
+    hour: "{{ item.cron.hour }}"
+    day: "{{ item.cron.day }}"
+    weekday: "{{ item.cron.weekday }}"
+    user: "{{ backup_user }}"
+    job: "backup perform --trigger {{ item.name }} --config-file {{ root_path }}/config.rb"
+  with_items:
+    - "{{ models }}"
+  tags:
+    - backup

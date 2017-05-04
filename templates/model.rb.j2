@@ -1,0 +1,235 @@
+# encoding: utf-8
+
+##
+# $ backup perform -t {{ item.name }} [-c <path_to_configuration_file>]
+#
+Model.new(:{{ item.name }}, 'Backup model {{ item.name }}') do
+
+{% if item.backup_database.mysql is defined %}
+{% for db_id in item.backup_database.mysql.dbname %}
+  ##
+  # MySQL [Database]
+  #
+  database MySQL, :{{ db_id }} do |db|
+    # To dump all databases, set `db.name = :all` (or leave blank)
+    db.name               = "{{ db_id }}"
+    db.username           = "{{ item.backup_database.mysql.username }}"
+{% if item.backup_database.mysql.password is defined %}    db.password           = "{{ item.backup_database.mysql.password }}"{% endif %}
+    db.host               = "{{ item.backup_database.mysql.host|default('127.0.0.1') }}"
+    db.port               = {{ item.backup_database.mysql.port|default(3306) }}
+{% if item.backup_database.mysql.socket is defined %}    db.socket             = "{{ item.backup_database.mysql.socket }}"{% endif %}
+    # Note: when using `skip_tables` with the `db.name = :all` option,
+    # table names should be prefixed with a database name.
+    # e.g. ["db_name.table_to_skip", ...]
+    db.skip_tables        = []
+    db.only_tables        = []
+    db.additional_options = []
+  end
+{% endfor %}
+{% endif %}
+{% if item.backup_database.postgresql is defined %}
+{% for db_id in item.backup_database.postgresql.dbname %}
+  ##
+  # PostgreSQL [Database]
+  #
+  database PostgreSQL, :{{ db_id }} do |db|
+    # To dump all databases, set `db.name = :all` (or leave blank)
+    db.name               = "{{ db_id }}"
+    db.username           = "{{ item.backup_database.postgresql.username|default('postgres') }}"
+{% if item.backup_database.postgresql.password is defined %}    db.password           = "{{ item.backup_database.postgresql.password }}"{% endif %}
+    db.host               = "{{ item.backup_database.postgresql.host|default('127.0.0.1') }}"
+    db.port               = {{ item.backup_database.postgresql.port|default(5432) }}
+{% if item.backup_database.postgresql.socket is defined %}    db.socket             = "{{ item.backup_database.postgresql.socket }}"{% endif %}
+    # When dumping all databases, `skip_tables` and `only_tables` are ignored.
+    db.skip_tables        = []
+    db.only_tables        = []
+    db.additional_options = []
+  end
+{% endfor %}
+{% endif %}
+{% if item.backup_storage.dropbox is defined %}
+  ##
+  # Dropbox [Storage]
+  #
+  # Your initial backup must be performed manually to authorize
+  # this machine with your Dropbox account. This authorized session
+  # will be stored in `cache_path` and used for subsequent backups.
+  #
+  store_with Dropbox do |db|
+    db.api_key     = "{{ item.backup_storage.dropbox.api_key }}"
+    db.api_secret  = "{{ item.backup_storage.dropbox.api_secret }}"
+    # Sets the path where the cached authorized session will be stored.
+    # Relative paths will be relative to ~/Backup, unless the --root-path
+    # is set on the command line or within your configuration file.
+    db.cache_path  = ".cache"
+    # :app_folder (default) or :dropbox
+    db.access_type = :app_folder
+    db.path        = "{{ item.backup_storage.dropbox.path }}"
+    db.keep        = {{ item.backup_storage.dropbox.keep|default(14) }}
+    # db.keep        = Time.now - 2592000 # Remove all backups older than 1 month.
+  end
+{% endif %}
+{% if item.backup_storage.s3 is defined %}
+  ##
+  # Amazon Simple Storage Service [Storage]
+  #
+  store_with S3 do |s3|
+    # AWS Credentials
+    s3.access_key_id     = "{{ item.backup_storage.s3.access_key }}"
+    s3.secret_access_key = "{{ item.backup_storage.s3.secret_access_key }}"
+    # Or, to use a IAM Profile:
+    # s3.use_iam_profile = true
+
+    s3.region            = "{{ item.backup_storage.s3.region|default('us-east-1') }}"
+    s3.bucket            = "{{ item.backup_storage.s3.bucket }}"
+    s3.path              = "{{ item.backup_storage.s3.path|default('') }}"
+    s3.keep              = {{ item.backup_storage.s3.keep|default(14) }}
+    # s3.keep              = Time.now - 2592000 # Remove all backups older than 1 month.
+  end
+{% endif %}
+{% if item.backup_storage.scp is defined %}
+  ##
+  # SCP (Secure Copy) [Storage]
+  #
+  store_with SCP do |server|
+    server.username   = "{{ item.backup_storage.scp.username }}"
+    server.password   = "{{ item.backup_storage.scp.password }}"
+    server.ip         = "{{ item.backup_storage.scp.ip }}"
+    server.port       = "{{ item.backup_storage.scp.port }}"
+    server.path       = "{{ item.backup_storage.scp.path }}"
+    server.keep       = {{ item.backup_storage.scp.keep|default(14) }}
+    # server.keep       = Time.now - 2592000 # Remove all backups older than 1 month.
+
+    # Additional options for the SSH connection.
+    # server.ssh_options = {}
+  end
+{% endif %}
+{% if item.backup_storage.local is defined %}
+  ##
+  # Local (Copy) [Storage]
+  #
+  store_with Local do |local|
+    local.path       = "{{ item.backup_storage.local.path }}"
+    local.keep       = {{ item.backup_storage.local.keep|default(14) }}
+    # local.keep       = Time.now - 2592000 # Remove all backups older than 1 month.
+  end
+{% endif %}
+{% if item.backup_encryption %}
+  ##
+  # OpenSSL [Encryptor]
+  #
+  encrypt_with OpenSSL do |encryption|
+    encryption.password      = "{{ item.encrypt_password }}"      # From String
+    encryption.password_file = "{{ item.encrypt_password_file }}" # Or from File
+    encryption.base64        = true
+    encryption.salt          = true
+  end
+{% endif %}
+{% if item.backup_compression %}
+  ##
+  # Gzip [Compressor]
+  #
+  compress_with Gzip
+{% endif %}
+{% if item.backup_notifier.mail is defined %}
+  ##
+  # Mail [Notifier]
+  #
+  notify_by Mail do |mail|
+    mail.on_success           = {{ item.backup_notifier.mail.on_success|default('true') }}
+    mail.on_warning           = {{ item.backup_notifier.mail.on_warning|default('true') }}
+    mail.on_failure           = {{ item.backup_notifier.mail.on_failure|default('true') }}
+
+    mail.from                 = "{{ item.backup_notifier.mail.from }}"
+    mail.to                   = "{{ item.backup_notifier.mail.to }}"
+{% if item.backup_notifier.mail.cc is defined %}    mail.cc                   = "{{ item.backup_notifier.mail.cc }}"{% endif %}
+{% if item.backup_notifier.mail.bcc is defined %}    mail.bcc                  = "{{ item.backup_notifier.mail.bcc }}"{% endif %}
+{% if item.backup_notifier.mail.reply_to is defined %}    mail.reply_to             = "{{ item.backup_notifier.mail.reply_to }}"{% endif %}
+    mail.address              = "{{ item.backup_notifier.mail.address }}"
+    mail.port                 = {{ item.backup_notifier.mail.port|default(587) }}
+    mail.domain               = "{{ item.backup_notifier.mail.domain }}"
+    mail.user_name            = "{{ item.backup_notifier.mail.username }}"
+    mail.password             = "{{ item.backup_notifier.mail.password }}"
+    mail.authentication       = "{{ item.backup_notifier.mail.authentication|default('plain') }}"
+    mail.encryption           = {{ item.backup_notifier.mail.encryption|default(':starttls') }}
+  end
+{% endif %}
+{% if item.backup_notifier.http_post is defined %}
+  ##
+  # HttpPost [Notifier]
+  #
+  notify_by HttpPost do |post|
+    post.on_success = {{ item.backup_notifier.http_post.on_success|default('true') }}
+    post.on_warning = {{ item.backup_notifier.http_post.on_success|default('true') }}
+    post.on_failure = {{ item.backup_notifier.http_post.on_success|default('true') }}
+
+    # URI to post the notification to.
+    # Port may be specified if needed.
+    # If Basic Authentication is required, supply user:pass.
+    post.uri = '{{ item.backup_notifier.http_post.uri }}'
+
+    ##
+    # Optional
+    #
+    # Additional headers to send.
+    # post.headers = { 'Authentication' => 'my_auth_info' }
+    #
+    # Additional form params to post.
+    # post.params = { 'auth_token' => 'my_token' }
+    #
+    # Successful response codes. Default: 200
+    # post.success_codes = [200, 201, 204]
+    #
+    # Defaults to true on most systems.
+    # Force with +true+, disable with +false+
+    # post.ssl_verify_peer = false
+    #
+    # Supplied by default. Override with a custom 'cacert.pem' file.
+    # post.ssl_ca_file = '/my/cacert.pem'
+  end
+{% endif %}
+{% if item.backup_notifier.slack is defined %}
+  ##
+  # Slack [Notifier]
+  #
+  notify_by Slack do |slack|
+    slack.on_success = {{ item.backup_notifier.slack.on_success|default('true') }}
+    slack.on_warning = {{ item.backup_notifier.slack.on_success|default('true') }}
+    slack.on_failure = {{ item.backup_notifier.slack.on_success|default('true') }}
+
+    # The incoming webhook url
+    # https://hooks.slack.com/services/xxxxxxxx/xxxxxxxxx/xxxxxxxxxx
+    slack.webhook_url = '{{ item.backup_notifier.slack.url }}'
+
+    ##
+    # Optional
+    #
+    # The channel to which messages will be sent
+{% if item.backup_notifier.slack.channel is defined %}
+    slack.channel = '{{ item.backup_notifier.slack.channel }}'
+{% endif %}
+    #
+    # The username to display along with the notification
+{% if item.backup_notifier.slack.username is defined %}
+    slack.username = '{{ item.backup_notifier.slack.username }}'
+{% endif %}
+  end
+{% endif %}
+{% if item.backup_notifier.zabbix is defined %}
+  notify_by Zabbix do |zabbix|
+    zabbix.on_success = {{ item.backup_notifier.zabbix.on_success|default('true') }}
+    zabbix.on_warning = {{ item.backup_notifier.zabbix.on_warning|default('true') }}
+    zabbix.on_failure = {{ item.backup_notifier.zabbix.on_failure|default('true') }}
+
+    zabbix.zabbix_host  = "{{ item.backup_notifier.zabbix.server }}"
+    zabbix.zabbix_port  = "{{ item.backup_notifier.zabbix.port|default(10051) }}"
+    zabbix.service_name = "Backup Trigger"
+    zabbix.service_host = "{{ item.backup_notifier.zabbix.hostname }}"
+    zabbix.item_key     = "backup_status"
+
+    # zabbix.message = lambda do |model, data|
+    #   "[#{data[:status][:message]}] #{model.label} (#{model.trigger})"
+    # end
+  end
+{% endif %}
+end
