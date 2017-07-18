@@ -131,6 +131,7 @@ Model.new(:{{ item.name }}, 'Backup model {{ item.name }}') do
   #
   compress_with Gzip
 {% endif %}
+
 {% if item.backup_notifier.mail is defined %}
   ##
   # Mail [Notifier]
@@ -215,21 +216,15 @@ Model.new(:{{ item.name }}, 'Backup model {{ item.name }}') do
 {% endif %}
   end
 {% endif %}
-{% if item.backup_notifier.zabbix is defined %}
-  notify_by Zabbix do |zabbix|
-    zabbix.on_success = {{ item.backup_notifier.zabbix.on_success|default('true') }}
-    zabbix.on_warning = {{ item.backup_notifier.zabbix.on_warning|default('true') }}
-    zabbix.on_failure = {{ item.backup_notifier.zabbix.on_failure|default('true') }}
+{% if item.backup_notifier.command is defined %}
+  notify_by Command do |cmd|
+    cmd.on_success = {{ item.backup_notifier.command.on_success|default('true') }}
+    cmd.on_warning = {{ item.backup_notifier.command.on_warning|default('true') }}
+    cmd.on_failure = {{ item.backup_notifier.command.on_failure|default('true') }}
 
-    zabbix.zabbix_host  = "{{ item.backup_notifier.zabbix.server }}"
-    zabbix.zabbix_port  = "{{ item.backup_notifier.zabbix.port|default(10051) }}"
-    zabbix.service_name = "Backup Trigger"
-    zabbix.service_host = "{{ item.backup_notifier.zabbix.hostname }}"
-    zabbix.item_key     = "backup_status"
+    cmd.command = '{{ item.backup_notifier.command.cmd }}'
 
-    # zabbix.message = lambda do |model, data|
-    #   "[#{data[:status][:message]}] #{model.label} (#{model.trigger})"
-    # end
+    cmd.args = {{ item.backup_notifier.command.args|default('["Backup %l", "%v"]') }}
   end
 {% endif %}
 end

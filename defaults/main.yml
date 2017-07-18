@@ -1,10 +1,10 @@
 ---
 backup_user: 'deploy'
-root_path: '/etc/Backup'
-tmp_path: '/tmp'
-data_path: '/var/backups'
+backup_root_path: '/etc/Backup'
+backup_tmp_path: '/tmp'
+backup_data_path: '/var/backups'
 
-models: []
+backup_models: []
 #  - name: 'database_backup'
 #    backup_database:
 #      postgresql:
@@ -80,13 +80,12 @@ models: []
 #        on_warning: 'true'
 #        on_failure: 'true'
 #        uri: ''
-#      zabbix:
+#      command:
 #        on_success: 'true'
 #        on_warning: 'true'
 #        on_failure: 'true'
-#        zabbix_host: 127.0.0.1
-#        zabbix_port: 10051
-#        service_host: "{{ inventory_hostname }}"
+#        cmd: ''
+#        args: '[]'
 
 #    cron:
 #      minute: 15

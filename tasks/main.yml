@@ -4,8 +4,8 @@
     name: "{{ item }}"
     state: present
   with_items:
-    - ruby2.3
-    - ruby2.3-dev
+    - ruby
+    - ruby-dev
     - gem
     - zlib1g-dev
     - build-essential
@@ -35,16 +35,16 @@
     group: "{{ backup_user }}"
     state: directory
   with_items:
-    - "{{ root_path }}"
-    - "{{ root_path }}/models"
-    - "{{ data_path }}"
+    - "{{ backup_root_path }}"
+    - "{{ backup_root_path }}/models"
+    - "{{ backup_data_path }}"
   tags:
     - backup
 
 - name: "Configure backup config"
   template:
     src:   config.rb.j2
-    dest:  "{{ root_path }}/config.rb"
+    dest:  "{{ backup_root_path }}/config.rb"
     owner: "{{ backup_user }}"
     group: "{{ backup_user }}"
     mode:  0600
@@ -54,12 +54,12 @@
 - name: "Configure backup models"
   template:
     src:   model.rb.j2
-    dest:  "{{ root_path }}/models/{{ item.name }}.rb"
+    dest:  "{{ backup_root_path }}/models/{{ item.name }}.rb"
     owner: "{{ backup_user }}"
     group: "{{ backup_user }}"
     mode:  0600
   with_items:
-    - "{{ models }}"
+    - "{{ backup_models }}"
   tags:
     - backup
 
@@ -80,8 +80,8 @@
     day: "{{ item.cron.day }}"
     weekday: "{{ item.cron.weekday }}"
     user: "{{ backup_user }}"
-    job: "backup perform --trigger {{ item.name }} --config-file {{ root_path }}/config.rb"
+    job: "backup perform --trigger {{ item.name }} --config-file {{ backup_root_path }}/config.rb"
   with_items:
-    - "{{ models }}"
+    - "{{ backup_models }}"
   tags:
     - backup
