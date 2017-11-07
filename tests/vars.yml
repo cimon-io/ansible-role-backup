@@ -1,0 +1,43 @@
+---
+backup_models:
+  - name: "daily"
+    databases:
+      - db-postgresql
+      - db-mysql
+    storages:
+      - local
+    notifiers:
+      - email
+    cron: { minute: 15, hour: 4 }
+
+backup_compressors:
+  type: gzip
+
+backup_encryptors:
+  password: "pa$$w0rd"
+
+backup_databases:
+  - name: "db-postgresql"
+    type: postgresql
+    db: :all
+  - name: "db2-mysql"
+    type: mysql
+    db: :all
+
+backup_storages:
+  - name: local
+    type: local
+    path: "/var/backups/"
+    keep: 7
+
+backup_notifiers:
+   - name: email
+     type: mail
+     from: "hostname@example.com"
+     to: "admin@example.com"
+     address: "example.com"
+     port: "587"
+     domain: "example.com"
+     username: "admin"
+     password: "password"
+     on_success: "false"

@@ -1,0 +1,11 @@
+---
+- hosts: all
+  roles:
+    - role: ruby
+      ruby_user: vagrant
+      ruby_group: vagrant
+      ruby_versions: ["2.3.3"]
+    - role: backup
+      backup_user: vagrant
+  vars_files:
+    - ./vars.yml

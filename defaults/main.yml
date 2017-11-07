@@ -1,94 +1,123 @@
 ---
-backup_user: 'deploy'
-backup_root_path: '/etc/Backup'
-backup_tmp_path: '/tmp'
-backup_data_path: '/var/backups'
+backup_user: "deploy"
+backup_root_path: "/etc/Backup"
+backup_tmp_path: "/tmp"
+backup_data_path: "/var/backups"
 
 backup_models: []
-#  - name: 'database_backup'
-#    backup_database:
-#      postgresql:
-#        dbname: :all
-#        host: "localhost"
-#        port: 5432
-#        username: "postgres"
-#        password: "postgres"
-#        socket: "/tmp/pg.sock"
-#      mysql:
-#        dbname: :all
-#        host: "localhost"
-#        port: 3306
-#        username: "mysql"
-#        password: "mysql"
-#        socket: "/tmp/mysql.sock"
+backup_databases: []
+backup_storages: []
+backup_notifiers: []
+backup_encryptors: {}
+backup_compressors: {}
 
-#    backup_encryption: False
-#    encrypt_password: 'pa$$w0rd'
-#    encrypt_password_file: ''
-#    backup_compression: True
+## Models:
+# backup_models:
+#   - name: ""
+#     databases: []
+#     notifiers: []
+#     storages: []
+#     cron: {}
 
-#    backup_storage:
-#      local:
-#        path: '/var/backups/'
-#        keep: 14
-#      dropbox:
-#        api_key: ''
-#        api_secret: ''
-#        path: ''
-#        keep: 14
-#      s3:
-#        access_key: ''
-#        secret_access_key: ''
-#        region: ''
-#        bucket: ''
-#        path: ''
-#        keep: 14
-#      scp:
-#        username: ''
-#        password: ''
-#        ip: ''
-#        port: ''
-#        path: ''
-#        keep: 14
+## Databases: PostgreSQL/MySQL
+# backup_databases:
+#   - name: ""
+#     type: "mysql"
+#     db: ""
+#     host: "127.0.0.1"
+#     port: 3306
+#     username: ""
+#     password: ""
+#     socket: ""
+#   - name: ""
+#     type: postgresql
+#     db: ""
+#     host: "127.0.0.1"
+#     port: 5432
+#     username: "postgres"
+#     password: ""
+#     socket: ""
 
-#    backup_notifier:
-#      mail:
-#        from: ''
-#        to: ''
-#        cc: ''
-#        bcc: ''
-#        reply_to: ''
-#        address: ''
-#        port: ''
-#        domain: ''
-#        username: ''
-#        password: ''
-#        authentication: 'plain'
-#        encryption: ':starttls'
-#        on_success: 'true'
-#        on_warning: 'true'
-#        on_failure: 'true'
-#      slack:
-#        url: ''
-#        channel: ''
-#        username: ''
-#        on_success: 'true'
-#        on_warning: 'true'
-#        on_failure: 'true'
-#      http_post:
-#        on_success: 'true'
-#        on_warning: 'true'
-#        on_failure: 'true'
-#        uri: ''
-#      command:
-#        on_success: 'true'
-#        on_warning: 'true'
-#        on_failure: 'true'
-#        cmd: ''
-#        args: '[]'
+## Encryptors: only OpenSSL
+# backup_encryptors:
+#   password: ""
+# backup_encryptors:
+#   password_file: ""
 
-#    cron:
-#      minute: 15
-#      hour: 1
-#      day: '*'
-#      weekday: '*'
+## Compressors: Gzip / Bzip2
+# backup_compressors:
+#   type: gzip
+#   level: 6
+# backup_compressors:
+#   type: bzip2
+#   level: 9
+
+## Storages:
+# backup_storages:
+#   - name: ""
+#     type: local
+#     path: ""
+#     keep: 14
+#   - name: ""
+#     type: dropbox
+#     api_key: ""
+#     api_secret: ""
+#     path: ""
+#     keep: 14
+#   - name: ""
+#     type: s3
+#     access_key: ""
+#     secret_access_key: ""
+#     region: ""
+#     bucket: ""
+#     path: ""
+#     keep: 14
+#   - name: ""
+#     type: scp
+#     username: ""
+#     password: ""
+#     ip: ""
+#     port: 22
+#     path: ""
+#     keep: 14
+
+## Notifiers
+# backup_notifiers:
+#   - name: email
+#     type: mail
+#     from: ""
+#     to: ""
+#     cc: ""
+#     bcc: ""
+#     reply_to: ""
+#     address: ""
+#     port: "587"
+#     domain: ""
+#     username: ""
+#     password: ""
+#     authentication: "plain"
+#     encryption: ":starttls"
+#     on_success: "true"
+#     on_warning: "true"
+#     on_failure: "true"
+#   - name: ""
+#     type: slack
+#     url: ""
+#     channel: ""
+#     username: ""
+#     on_success: "true"
+#     on_warning: "true"
+#     on_failure: "true"
+#   - name: ""
+#     type: http_post
+#     uri: ""
+#     on_success: "true"
+#     on_warning: "true"
+#     on_failure: "true"
+#   - name: ""
+#     type: command
+#     cmd: ""
+#     args: "[]"
+#     on_success: "true"
+#     on_warning: "true"
+#     on_failure: "true"

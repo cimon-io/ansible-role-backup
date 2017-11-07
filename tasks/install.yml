@@ -1,0 +1,14 @@
+---
+- name: "get gem executable"
+  shell: "/bin/bash -lc 'which gem'"
+  become_user: "{{ backup_user }}"
+  register: gem_exec
+
+- name: "install gem backup"
+  gem:
+    name: backup
+    state: present
+    version: "{{ backup_gem_version }}"
+    executable: "{{ gem_exec.stdout }}"
+    user_install: no
+  become_user: "{{ backup_user }}"
