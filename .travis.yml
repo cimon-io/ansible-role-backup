@@ -11,6 +11,7 @@ addons:
 
 install:
   - rvm install 2.3.3
+  - rvm --default use 2.3.3
   - pip install ansible
   - ansible --version
 
