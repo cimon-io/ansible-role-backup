@@ -1,11 +1,13 @@
 ---
 - hosts: all
   roles:
-    - role: ruby
-      ruby_user: vagrant
-      ruby_group: vagrant
-      ruby_versions: ["2.3.3"]
+    - role: cimon-io.users
+      users_accounts:
+        - name: backup_user
+    - role: cimon-io.ruby
+      ruby_versions:
+        - "2.3.3"
     - role: backup
-      backup_user: vagrant
+      backup_user: backup_user
   vars_files:
     - ./vars.yml

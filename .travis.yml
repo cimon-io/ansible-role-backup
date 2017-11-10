@@ -13,8 +13,13 @@ install:
   - pip install ansible
   - ansible --version
 
+before_script:
+  - echo -e '[local]\nlocalhost ansible_connection=local' > inventory
+  - ansible-galaxy install -r tests/requirements.yml -p ./tests/roles
+
 script:
-  - ansible-playbook tests/playbook.yml -i tests/inventory --syntax-check
+  - ansible-playbook tests/playbook.yml -i inventory --syntax-check
+  - ansible-playbook tests/playbook.yml -i inventory
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/
