@@ -3,12 +3,11 @@
   roles:
     - role: cimon-io.users
       users_accounts:
-        - name: backup_user
+        - name: deploy
     - role: cimon-io.ruby
-      ruby_user: backup_user
+      ruby_global_gems: []
       ruby_versions:
         - "2.3.3"
     - role: ansible-role-backup
-      backup_user: backup_user
   vars_files:
     - ./vars.yml
