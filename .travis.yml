@@ -17,6 +17,9 @@ script:
   - echo -e '[local]\nlocalhost ansible_connection=local' > inventory
   - ansible-galaxy install -r tests/requirements.yml -p ./tests/roles
   - ansible-playbook tests/playbook.yml -i inventory --syntax-check
+  - sudo -u deploy ruby --version
+  - sudo -u deploy which gem
+  - sudo -u deploy rbenv versions
   - ansible-playbook tests/playbook.yml -i inventory
 
 notifications:
