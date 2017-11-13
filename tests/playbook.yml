@@ -1,13 +1,12 @@
 ---
 - hosts: all
+  pre_tasks:
+    - name: install ruby
+      apt:
+        name: ["ruby", "ruby-dev", "build-essential"]
+        update_cache: yes
   roles:
-    #    - role: cimon-io.ruby
-    #      ruby_user: "{{ ansible_env.USER }}"
-    #      ruby_group: "{{ ansible_env.USER }}"
-    #      ruby_global_gems: []
-    #      ruby_versions:
-    #        - "2.3.3"
     - role: ansible-role-backup
-      backup_user: "{{ ansible_env.USER }}"
+      backup_user: root
   vars_files:
     - ./vars.yml

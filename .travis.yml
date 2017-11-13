@@ -10,14 +10,11 @@ addons:
     - python-pip
 
 install:
-  - rvm install 2.3.3
-  - rvm --default use 2.3.3
   - pip install ansible
   - ansible --version
 
 script:
   - echo -e '[local]\nlocalhost ansible_connection=local' > inventory
-  - ansible-galaxy install -r tests/requirements.yml -p ./tests/roles
   - ansible-playbook tests/playbook.yml -i inventory --syntax-check
   - ansible-playbook tests/playbook.yml -i inventory
 
