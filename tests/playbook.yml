@@ -1,9 +1,12 @@
 ---
 - hosts: all
   pre_tasks:
+    - name: add ppa
+      apt_repository:
+        repo: "ppa:brightbox/ruby-ng"
     - name: install ruby
       apt:
-        name: ["ruby", "ruby-dev", "build-essential"]
+        name: ["ruby2.3", "ruby2.3-dev", "build-essential"]
         update_cache: yes
   roles:
     - role: ansible-role-backup

@@ -14,6 +14,7 @@ install:
   - ansible --version
 
 script:
+  - apt-cache madison ruby
   - echo -e '[local]\nlocalhost ansible_connection=local' > inventory
   - ansible-playbook tests/playbook.yml -i inventory --syntax-check
   - ansible-playbook tests/playbook.yml -i inventory
