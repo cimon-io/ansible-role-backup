@@ -2,7 +2,7 @@
 language: python
 python: "2.7"
 
-sudo: false
+sudo: required
 
 addons:
   apt:
@@ -14,7 +14,9 @@ install:
   - ansible --version
 
 script:
-  - ansible-playbook tests/playbook.yml -i tests/inventory --syntax-check
+  - echo -e '[local]\nlocalhost ansible_connection=local' > inventory
+  - ansible-playbook tests/playbook.yml -i inventory --syntax-check
+  - ansible-playbook tests/playbook.yml -i inventory
 
 notifications:
   webhooks: https://galaxy.ansible.com/api/v1/notifications/

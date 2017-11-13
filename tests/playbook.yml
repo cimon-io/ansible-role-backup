@@ -1,11 +1,15 @@
 ---
 - hosts: all
+  pre_tasks:
+    - name: add ppa
+      apt_repository:
+        repo: "ppa:brightbox/ruby-ng"
+    - name: install ruby
+      apt:
+        name: ["ruby2.3", "ruby2.3-dev", "build-essential"]
+        update_cache: yes
   roles:
-    - role: ruby
-      ruby_user: vagrant
-      ruby_group: vagrant
-      ruby_versions: ["2.3.3"]
-    - role: backup
-      backup_user: vagrant
+    - role: ansible-role-backup
+      backup_user: root
   vars_files:
     - ./vars.yml

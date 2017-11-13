@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/cimon-io/ansible-role-backup.svg?branch=master)](https://travis-ci.org/cimon-io/ansible-role-backup)
+
 # Ansible Role for Backup gem
 
 An ansible role that enables backups using [backup](https://backup.github.io/backup/v4/) gem. It allows you to configure the backup system for MySQL and PostgreSQL databases and automate it with the **Cron** utility. Various storages, notifiers and compressors are available.
@@ -13,7 +15,7 @@ This role can be run under all versions of Ubuntu.
 
 ## Requirements
 
-None
+Ruby (2.0.x - 2.3.x).
 
 ## Role Variables
 
