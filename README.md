@@ -13,7 +13,7 @@ This role can be run under all versions of Ubuntu.
 
 ## Requirements
 
-None
+Ruby (2.0.x - 2.3.x).
 
 ## Role Variables
 
