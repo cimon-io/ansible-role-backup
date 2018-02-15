@@ -1,8 +1,8 @@
 ---
 - name: "install backup system"
-  include: install.yml
+  import_tasks: install.yml
   tags: [backup, backup-install]
 
 - name: "configure backups"
-  include: configure.yml
+  import_tasks: configure.yml
   tags: [backup, backup-configure]
