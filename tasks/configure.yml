@@ -28,13 +28,6 @@
   with_items:
     - "{{ backup_models }}"
 
-- name: "preconfigure cron"
-  cron:
-    name:  PATH
-    env:   yes
-    value: "{{ ansible_env.PATH }}"
-    user:  "{{ backup_user }}"
-
 - name: "configure cron"
   cron:
     name:    "Backup job: {{ item.name }}"
@@ -43,7 +36,7 @@
     day:     "{{ item.cron.day     | default(omit) }}"
     weekday: "{{ item.cron.weekday | default(omit) }}"
     user:    "{{ backup_user }}"
-    job:     "backup perform --trigger {{ item.name }} --config-file {{ backup_root_path }}/config.rb"
+    job:     '/bin/bash -lc "backup perform --trigger {{ item.name }} --config-file {{ backup_root_path }}/config.rb"'
   with_items:
     - "{{ backup_models }}"
   when: item.cron is defined
