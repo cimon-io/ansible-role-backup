@@ -17,10 +17,14 @@ Model.new(:{{ item.name }}, 'Backup model {{ item.name }}') do
     # To dump all databases, set `db.name = :all` (or leave blank)
     db.name               = "{{ dbs.db }}"
     db.username           = "{{ dbs.username }}"
-{% if dbs.password is defined %}    db.password           = "{{ dbs.password }}"{% endif %}
+{% if dbs.password is defined %}
+    db.password           = "{{ dbs.password }}"
+{% endif %}
     db.host               = "{{ dbs.host|default('127.0.0.1') }}"
     db.port               = {{ dbs.port|default(3306) }}
-{% if dbs.socket is defined %}    db.socket             = "{{ dbs.socket }}"{% endif %}
+{% if dbs.socket is defined %}
+    db.socket             = "{{ dbs.socket }}"
+{% endif %}
     # Note: when using `skip_tables` with the `db.name = :all` option,
     # table names should be prefixed with a database name.
     # e.g. ["db_name.table_to_skip", ...]
@@ -37,10 +41,14 @@ Model.new(:{{ item.name }}, 'Backup model {{ item.name }}') do
     # To dump all databases, set `db.name = :all` (or leave blank)
     db.name               = "{{ dbs.db }}"
     db.username           = "{{ dbs.username|default('postgres') }}"
-{% if dbs.password is defined %}    db.password           = "{{ dbs.password }}"{% endif %}
+{% if dbs.password is defined %}
+    db.password           = "{{ dbs.password }}"
+{% endif %}
     db.host               = "{{ dbs.host|default('127.0.0.1') }}"
     db.port               = {{ dbs.port|default(5432) }}
-{% if dbs.socket is defined %}    db.socket             = "{{ dbs.socket }}"{% endif %}
+{% if dbs.socket is defined %}
+    db.socket             = "{{ dbs.socket }}"
+{% endif %}
     # When dumping all databases, `skip_tables` and `only_tables` are ignored.
     db.skip_tables        = []
     db.only_tables        = []
@@ -174,9 +182,15 @@ Model.new(:{{ item.name }}, 'Backup model {{ item.name }}') do
 
     mail.from                 = "{{ notty.from }}"
     mail.to                   = "{{ notty.to }}"
-{% if notty.cc is defined %}    mail.cc                   = "{{ notty.cc }}"{% endif %}
-{% if notty.bcc is defined %}    mail.bcc                  = "{{ notty.bcc }}"{% endif %}
-{% if notty.reply_to is defined %}    mail.reply_to             = "{{ notty.reply_to }}"{% endif %}
+{% if notty.cc is defined %}
+   mail.cc                   = "{{ notty.cc }}"
+{% endif %}
+{% if notty.bcc is defined %}
+   mail.bcc                  = "{{ notty.bcc }}"
+{% endif %}
+{% if notty.reply_to is defined %}
+    mail.reply_to             = "{{ notty.reply_to }}"
+{% endif %}
     mail.address              = "{{ notty.address }}"
     mail.port                 = {{ notty.port|default(587) }}
     mail.domain               = "{{ notty.domain }}"
