@@ -119,6 +119,23 @@ Model.new(:{{ item.name }}, 'Backup model {{ item.name }}') do
     # server.ssh_options = {}
   end
 {% endif %}
+{% if stor.type == 'ftp' %}
+  ##
+  # FTP [Storage]
+  #
+  store_with FTP do |server|
+    server.username   = "{{ stor.username }}"
+    server.password   = "{{ stor.password }}"
+    server.ip         = "{{ stor.ip }}"
+    server.port       = "{{ stor.port|default(21) }}"
+    server.path       = "{{ stor.path }}"
+    server.keep       = {{ stor.keep|default(14) }}
+
+    server.passive_mode = {{ stor.passive_mode|default(false) }}
+    # Configures open_timeout and read_timeout for Net::FTP
+    server.timeout      = {{ stor.timeout|default(10) }}
+  end
+{% endif %}
 {% if stor.type == 'local' %}
   ##
   # Local (Copy) [Storage]

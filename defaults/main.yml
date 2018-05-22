@@ -80,6 +80,16 @@ backup_compressors: {}
 #     port: 22
 #     path: ""
 #     keep: 14
+#   - name: ""
+#     type: ftp
+#     username: ""
+#     password: ""
+#     ip: ""
+#     port: 21
+#     path: ""
+#     keep: 14
+#     passive_mode: false
+#     timeout: 10
 
 ## Notifiers
 # backup_notifiers:
